@@ -26,12 +26,23 @@ project("snake_gles")
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        native-lib.cpp)
+        main.cpp)
+
+# Searches for a package provided by the game activity dependency
+find_package(game-activity REQUIRED CONFIG)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
 target_link_libraries(${CMAKE_PROJECT_NAME}
+        # The game activity
+        game-activity::game-activity
+
+        # EGL and other dependent libraries required for drawing
+        # and interacting with Android system
+        EGL
+        GLESv3
+
         # List libraries link to the target library
         android
         log)
