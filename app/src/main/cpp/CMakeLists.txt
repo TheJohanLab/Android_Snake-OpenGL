@@ -26,7 +26,12 @@ project("snake_gles")
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        main.cpp)
+        main.cpp
+        Renderer.cpp
+        Utility.cpp
+        Shader.cpp
+        TextureAsset.cpp
+        AndroidOut.cpp)
 
 # Searches for a package provided by the game activity dependency
 find_package(game-activity REQUIRED CONFIG)
