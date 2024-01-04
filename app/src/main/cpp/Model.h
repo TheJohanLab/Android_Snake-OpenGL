@@ -4,6 +4,13 @@
 #include <vector>
 #include "TextureAsset.h"
 
+union Vector4 {
+    struct {
+        float x, y, z, w;
+    };
+    float idx[4];
+};
+
 union Vector3 {
     struct {
         float x, y, z;
@@ -22,11 +29,11 @@ union Vector2 {
 };
 
 struct Vertex {
-    constexpr Vertex(const Vector3 &inPosition, const Vector2 &inUV) : position(inPosition),
+    constexpr Vertex(const Vector3 &inPosition, const Vector4 &inUV) : position(inPosition),
                                                                        uv(inUV) {}
 
     Vector3 position;
-    Vector2 uv;
+    Vector4 uv;
 };
 
 typedef uint16_t Index;

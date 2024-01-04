@@ -39,14 +39,15 @@ aout << std::endl;\
 
 //! Color for cornflower blue. Can be sent directly to glClearColor
 #define CORNFLOWER_BLUE 100 / 255.f, 149 / 255.f, 237 / 255.f, 1
+#define CORNFLOWER 1.f, 1.f, 1.f, 1.f
 
 
 // Vertex shader, you'd typically load this from assets
 static const char *vertex = R"vertex(#version 300 es
 in vec3 inPosition;
-in vec2 inUV;
+in vec4 inUV;
 
-out vec2 fragUV;
+out vec4 fragUV;
 
 uniform mat4 uProjection;
 
@@ -60,14 +61,14 @@ void main() {
 static const char *fragment = R"fragment(#version 300 es
 precision mediump float;
 
-in vec2 fragUV;
+in vec4 fragUV;
 
 uniform sampler2D uTexture;
 
 out vec4 outColor;
 
 void main() {
-    outColor = texture(uTexture, fragUV);
+    outColor = fragUV;
 }
 )fragment";
 
@@ -130,7 +131,7 @@ void Renderer::render() {
         // send the matrix to the shader
         // Note: the shader must be active for this to work. Since we only have one shader for this
         // demo, we can assume that it's active.
-        //shader_->setProjectionMatrix(projectionMatrix);
+        shader_->setProjectionMatrix(projectionMatrix);
 
         // make sure the matrix isn't generated every frame
         shaderNeedsNewProjectionMatrix_ = false;
@@ -142,11 +143,11 @@ void Renderer::render() {
     // Render all the models. There's no depth testing in this sample so they're accepted in the
     // order provided. But the sample EGL setup requests a 24 bit depth buffer so you could
     // configure it at the end of initRenderer
-    /*if (!models_.empty()) {
+    if (!models_.empty()) {
         for (const auto &model: models_) {
             shader_->drawModel(model);
         }
-    }*/
+    }
 
     // Present the rendered image. This is an implicit glFlush.
     auto swapResult = eglSwapBuffers(display_, surface_);
@@ -236,11 +237,11 @@ void Renderer::initRenderer() {
     shader_->activate();
 
     // setup any other gl related global states
-    glClearColor(CORNFLOWER_BLUE);
+    //glClearColor(CORNFLOWER_BLUE);
 
     // enable alpha globally for now, you probably don't want to do this in a game
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // get some demo models into memory
     createModels();
@@ -277,10 +278,10 @@ void Renderer::createModels() {
      * 3 --- 2
      */
     std::vector<Vertex> vertices = {
-            Vertex(Vector3{1, 1, 0}, Vector2{0, 0}), // 0
-            Vertex(Vector3{-1, 1, 0}, Vector2{1, 0}), // 1
-            Vertex(Vector3{-1, -1, 0}, Vector2{1, 1}), // 2
-            Vertex(Vector3{1, -1, 0}, Vector2{0, 1}) // 3
+            Vertex(Vector3{0.5, 0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 0
+            Vertex(Vector3{-0.5, 0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 1
+            Vertex(Vector3{-0.5, -0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 2
+            Vertex(Vector3{0.5, -0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}) // 3
     };
     std::vector<Index> indices = {
             0, 1, 2, 0, 2, 3
@@ -294,7 +295,7 @@ void Renderer::createModels() {
     //auto spAndroidRobotTexture = TextureAsset::loadAsset(assetManager, "android_robot.png");
 
     // Create a model and put it in the back of the render list.
-    //models_.emplace_back(vertices, indices, spAndroidRobotTexture);
+    models_.emplace_back(vertices, indices, nullptr);
 }
 
 
