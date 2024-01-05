@@ -69,6 +69,10 @@ private:
 
     std::unique_ptr<Shader> shader_;
     std::vector<Model> models_;
+
+    std::vector<Index> initIndices(const size_t& maxIndexCount);
+    void initVertices();
+    Quad createQuad(float x, float y, float width, float height);
 };
 
 #endif //ANDROIDGLINVESTIGATIONS_RENDERER_H

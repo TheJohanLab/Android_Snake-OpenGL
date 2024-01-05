@@ -39,7 +39,7 @@ aout << std::endl;\
 
 //! Color for cornflower blue. Can be sent directly to glClearColor
 #define CORNFLOWER_BLUE 100 / 255.f, 149 / 255.f, 237 / 255.f, 1
-#define CORNFLOWER 1.f, 1.f, 1.f, 1.f
+#define CORNFLOWER 0.f, 0.f, 0.f, 0.f
 
 
 // Vertex shader, you'd typically load this from assets
@@ -121,10 +121,10 @@ void Renderer::render() {
         float projectionMatrix[16] = {0};
 
         // build an orthographic projection matrix for 2d rendering
-        Utility::buildOrthographicMatrix(
+        Utility::buildOrthographicMatrix2(
                 projectionMatrix,
-                kProjectionHalfHeight,
-                float(width_) / height_,
+                float(width_),
+                height_,
                 kProjectionNearPlane,
                 kProjectionFarPlane);
 
@@ -143,6 +143,11 @@ void Renderer::render() {
     // Render all the models. There's no depth testing in this sample so they're accepted in the
     // order provided. But the sample EGL setup requests a 24 bit depth buffer so you could
     // configure it at the end of initRenderer
+
+
+
+    createModels();
+
     if (!models_.empty()) {
         for (const auto &model: models_) {
             shader_->drawModel(model);
@@ -237,10 +242,10 @@ void Renderer::initRenderer() {
     shader_->activate();
 
     // setup any other gl related global states
-    //glClearColor(CORNFLOWER_BLUE);
+    glClearColor(CORNFLOWER);
 
     // enable alpha globally for now, you probably don't want to do this in a game
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // get some demo models into memory
@@ -277,15 +282,39 @@ void Renderer::createModels() {
      * |   \ |
      * 3 --- 2
      */
-    std::vector<Vertex> vertices = {
-            Vertex(Vector3{0.5, 0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 0
-            Vertex(Vector3{-0.5, 0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 1
-            Vertex(Vector3{-0.5, -0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 2
-            Vertex(Vector3{0.5, -0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}) // 3
-    };
-    std::vector<Index> indices = {
-            0, 1, 2, 0, 2, 3
-    };
+
+    const size_t maxQuadCount = static_cast<size_t>(20 * 20);
+    const size_t maxVertexCount = maxQuadCount * 4;
+    const size_t maxIndexCount = maxQuadCount * 6;
+
+
+    /*std::vector<Vertex> vertices = {
+            Vertex(Vector3{100, 100, 0}, Vector4{0.5, 0.5, 1, 1}), // 0
+            Vertex(Vector3{682, 100, 0}, Vector4{1, 1, 1, 1}), // 1
+            Vertex(Vector3{682, 682, 0}, Vector4{1, 1, 1, 1}), // 2
+            Vertex(Vector3{100, 682, 0}, Vector4{1, 1, 1, 1}), // 3
+            Vertex(Vector3{0.5, -0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 0
+            Vertex(Vector3{1, -0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 1
+            Vertex(Vector3{1, 0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}), // 2
+            Vertex(Vector3{0.5, 0.5, 0}, Vector4{1.0, 1.0, 1.0, 1.0}) // 3
+    };*/
+
+    std::vector<Quad> vertices;
+
+    for (int y = 20-1; y >=0 ; y--)
+    {
+        for (int x = 0; x < 20; x++)
+        {
+            vertices.emplace_back(createQuad(x, y, width_ - 50, height_ - 600));
+
+        }
+    }
+
+    /*std::vector<Index> indices = {
+            0, 1, 2, 2, 3, 0
+            //4, 5, 6, 6, 7, 4
+    };*/
+    std::vector<Index> indices = initIndices(maxIndexCount);
 
     // loads an image and assigns it to the square.
     //
@@ -296,6 +325,50 @@ void Renderer::createModels() {
 
     // Create a model and put it in the back of the render list.
     models_.emplace_back(vertices, indices, nullptr);
+}
+
+std::vector<Index> Renderer::initIndices(const size_t& maxIndexCount)
+{
+    std::vector<Index> indices;
+    Index offset = 0;
+    for (size_t i = 0; i < maxIndexCount; i += 6)
+    {
+        indices.push_back(0 + offset);
+        indices.push_back(1 + offset);
+        indices.push_back(2 + offset);
+
+        indices.push_back(2 + offset);
+        indices.push_back(3 + offset);
+        indices.push_back(0 + offset);
+
+        offset += 4;
+    }
+    return indices;
+}
+
+Quad Renderer::createQuad(float x, float y, float width, float height)
+{
+    float quadWidth = width / 20;
+    float quadHeight = height / 20;
+
+    x *= quadWidth;
+    y *= quadHeight;
+    int offset = 2.0f;
+
+    Quad quad;
+    quad.vertex1.position = { x + offset ,y + offset };
+    quad.vertex1.uv = { 0.2, 0.5, 0.6, 0.5 };
+
+    quad.vertex2.position = { x + quadWidth - offset ,y + offset };
+    quad.vertex2.uv = { 0.1, 0.5, 0.8, 0.5 };
+
+    quad.vertex3.position = { x + quadWidth - offset ,y + quadHeight - offset};
+    quad.vertex3.uv = { 0.1, 0.5, 0.8, 0.5 };
+
+    quad.vertex4.position = { x + offset ,y + quadHeight - offset};
+    quad.vertex4.uv = { 0.1, 0.5, 0.8, 0.5 };
+
+    return quad;
 }
 
 
@@ -386,3 +459,6 @@ void Renderer::handleInput() {
     // clear the key input count too.
     android_app_clear_key_events(inputBuffer);
 }
+
+
+

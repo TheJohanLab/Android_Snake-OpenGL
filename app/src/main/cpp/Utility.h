@@ -28,6 +28,8 @@ public:
             float near,
             float far);
 
+    static float* buildOrthographicMatrix2(float *outMatrix, float width, float height, float near, float far);
+
     static float *buildIdentityMatrix(float *outMatrix);
 };
 

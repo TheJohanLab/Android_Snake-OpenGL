@@ -31,9 +31,22 @@ union Vector2 {
 struct Vertex {
     constexpr Vertex(const Vector3 &inPosition, const Vector4 &inUV) : position(inPosition),
                                                                        uv(inUV) {}
+    Vertex() {}
 
     Vector3 position;
     Vector4 uv;
+};
+
+struct Quad
+{
+    Quad() {
+
+    }
+
+    Vertex vertex1;
+    Vertex vertex2;
+    Vertex vertex3;
+    Vertex vertex4;
 };
 
 typedef uint16_t Index;
@@ -41,7 +54,7 @@ typedef uint16_t Index;
 class Model {
 public:
     inline Model(
-            std::vector<Vertex> vertices,
+            std::vector<Quad> vertices,
             std::vector<Index> indices,
             std::shared_ptr<TextureAsset> spTexture)
             : vertices_(std::move(vertices)),
@@ -49,7 +62,7 @@ public:
               spTexture_(std::move(spTexture))
               {}
 
-    inline const Vertex *getVertexData() const {
+    inline const Quad *getVertexData() const {
         return vertices_.data();
     }
 
@@ -66,7 +79,7 @@ public:
     }
 
 private:
-    std::vector<Vertex> vertices_;
+    std::vector<Quad> vertices_;
     std::vector<Index> indices_;
     std::shared_ptr<TextureAsset> spTexture_;
 };
