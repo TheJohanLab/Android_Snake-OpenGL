@@ -78,6 +78,21 @@ public:
         return *spTexture_;
     }
 
+    inline void updateVertex(int x)
+    {
+        int idx = x;
+        Vector4 color = {1.0, 1.0, 1.0, 1.0};
+        vertices_[idx].vertex1.uv = color;
+        vertices_[idx].vertex2.uv = color;
+        vertices_[idx].vertex3.uv = color;
+        vertices_[idx].vertex4.uv = color;
+    }
+
+    inline std::vector<Quad> getVertices() const
+    {
+        return vertices_;
+    }
+
 private:
     std::vector<Quad> vertices_;
     std::vector<Index> indices_;

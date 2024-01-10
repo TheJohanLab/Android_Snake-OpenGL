@@ -106,6 +106,8 @@ Renderer::~Renderer() {
     }
 }
 
+bool init = false;
+int i = 0;
 
 void Renderer::render() {
     // Check to see if the surface has changed size. This is _necessary_ to do every frame when
@@ -145,8 +147,16 @@ void Renderer::render() {
     // configure it at the end of initRenderer
 
 
-
-    createModels();
+    //i += 0.001;
+    //createModels(i);
+    if (!init)
+    {
+        initVertices();
+        init = true;
+    }
+    //updateVertices();
+    i++;
+    models_[0].updateVertex(i);
 
     if (!models_.empty()) {
         for (const auto &model: models_) {
@@ -249,7 +259,7 @@ void Renderer::initRenderer() {
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // get some demo models into memory
-    createModels();
+    initVertices();
 }
 
 void Renderer::updateRenderArea() {
@@ -273,7 +283,7 @@ void Renderer::updateRenderArea() {
 /**
  * @brief Create any demo models we want for this demo.
  */
-void Renderer::createModels() {
+void Renderer::initVertices() {
     /*
      * This is a square:
      * 0 --- 1
@@ -283,6 +293,7 @@ void Renderer::createModels() {
      * 3 --- 2
      */
 
+    models_.clear();
     const size_t maxQuadCount = static_cast<size_t>(20 * 20);
     const size_t maxVertexCount = maxQuadCount * 4;
     const size_t maxIndexCount = maxQuadCount * 6;
@@ -305,7 +316,7 @@ void Renderer::createModels() {
     {
         for (int x = 0; x < 20; x++)
         {
-            vertices.emplace_back(createQuad(x, y, width_ - 50, height_ - 600));
+            vertices.emplace_back(createQuad(x, y, width_, height_));
 
         }
     }
@@ -355,18 +366,20 @@ Quad Renderer::createQuad(float x, float y, float width, float height)
     y *= quadHeight;
     int offset = 2.0f;
 
+    Vector4 color = {0.0, 0.0, 1.0, 1.0};
+
     Quad quad;
     quad.vertex1.position = { x + offset ,y + offset };
-    quad.vertex1.uv = { 0.2, 0.5, 0.6, 0.5 };
+    quad.vertex1.uv = color;
 
     quad.vertex2.position = { x + quadWidth - offset ,y + offset };
-    quad.vertex2.uv = { 0.1, 0.5, 0.8, 0.5 };
+    quad.vertex2.uv = color;
 
     quad.vertex3.position = { x + quadWidth - offset ,y + quadHeight - offset};
-    quad.vertex3.uv = { 0.1, 0.5, 0.8, 0.5 };
+    quad.vertex3.uv = color;
 
     quad.vertex4.position = { x + offset ,y + quadHeight - offset};
-    quad.vertex4.uv = { 0.1, 0.5, 0.8, 0.5 };
+    quad.vertex4.uv = color;
 
     return quad;
 }
@@ -460,5 +473,32 @@ void Renderer::handleInput() {
     android_app_clear_key_events(inputBuffer);
 }
 
+void Renderer::updateVertices() {
+
+    std::map<int, Vector4> colorMap =
+            {
+                    {0, {0.1, 0.1, 0.1, 0.5}},
+                    {1, {0.9, 0.2, 0.4, 1.0}},
+                    {2, {0.2, 0.6, 0.2, 1.0}}
+            };
+
+    for (int x = 0; x <= 20 - 1; x++)
+    {
+        for (int y = 0; y <= 20 - 1; y++)
+        {
+            uint32_t position = y * 20 + x;
+            setQuadColor(&m_vertices[position], colorMap[0]);
+        }
+    }
+
+}
+
+void Renderer::setQuadColor(Quad* quad, Vector4 color)
+{
+    quad->vertex1.uv = color;
+    quad->vertex2.uv = color;
+    quad->vertex3.uv = color;
+    quad->vertex4.uv = color;
+}
 
 

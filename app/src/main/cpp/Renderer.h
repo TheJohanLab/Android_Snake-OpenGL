@@ -7,6 +7,8 @@
 #include "Model.h"
 #include "Shader.h"
 
+#include <map>
+
 struct android_app;
 
 class Renderer {
@@ -39,7 +41,11 @@ public:
      */
     void render();
 
+    void updateVertices();
+
 private:
+
+
     /*!
      * Performs necessary OpenGL initialization. Customize this if you want to change your EGL
      * context or application-wide settings.
@@ -56,7 +62,7 @@ private:
      * Creates the models for this sample. You'd likely load a scene configuration from a file or
      * use some other setup logic in your full game.
      */
-    void createModels();
+    //void createModels(float i);
 
     android_app *app_;
     EGLDisplay display_;
@@ -69,10 +75,12 @@ private:
 
     std::unique_ptr<Shader> shader_;
     std::vector<Model> models_;
+    std::vector<Quad> m_vertices;
 
     std::vector<Index> initIndices(const size_t& maxIndexCount);
     void initVertices();
     Quad createQuad(float x, float y, float width, float height);
+    void setQuadColor(Quad* quad, Vector4 color);
 };
 
 #endif //ANDROIDGLINVESTIGATIONS_RENDERER_H

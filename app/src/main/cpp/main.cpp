@@ -3,6 +3,7 @@
 #include <game-activity/GameActivity.cpp>
 #include <game-text-input/gametextinput.cpp>
 #include "Renderer.h"
+#include <chrono>
 
 extern "C" {
 
@@ -73,6 +74,10 @@ extern "C" {
         int events;
         android_poll_source *pSource;
 
+        int m_frameCnt = 0;
+        //clock_t t1, t2;
+        //m_isRunning = true;
+        double period = 1000 / 60; //16 ms
         do {
             // Process all pending events before running game logic.
             if (ALooper_pollAll(0, nullptr, &events, (void **) &pSource) >= 0) {
@@ -81,19 +86,38 @@ extern "C" {
                 }
             }
 
+
+
             // Check if any user data is associated. This is assigned in handle_cmd
             if (pApp->userData) {
 
-                int a = 0;
-                // We know that our user data is a Renderer, so reinterpret cast it. If you change your
-                // user data remember to change it here
-                auto *pRenderer = reinterpret_cast<Renderer *>(pApp->userData);
 
-                // Process game input
-                pRenderer->handleInput();
+                std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();;
+                std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();;
+                std::chrono::milliseconds a;
 
-                // Render a frame
-                pRenderer->render();
+                do {
+                    t2 = std::chrono::high_resolution_clock::now();
+                    a = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+                    auto b = a.count();
+                    int z = 0;
+                }while (a.count() < period);
+
+                m_frameCnt++;
+                if (m_frameCnt % 60 == 0) {
+
+                    // We know that our user data is a Renderer, so reinterpret cast it. If you change your
+                    // user data remember to change it here
+                    auto *pRenderer = reinterpret_cast<Renderer *>(pApp->userData);
+
+                    // Process game input
+                    pRenderer->handleInput();
+
+                    // Render a frame
+                    pRenderer->render();
+
+                }
+
             }
         } while (!pApp->destroyRequested);
     }

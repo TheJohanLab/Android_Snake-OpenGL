@@ -31,7 +31,12 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         Utility.cpp
         Shader.cpp
         TextureAsset.cpp
-        AndroidOut.cpp)
+        AndroidOut.cpp
+        Game/Case.cpp
+        Game/GameBoard.cpp
+        Game/GameLoop.cpp
+        Game/GameMechanics.cpp
+        Game/Snake.cpp)
 
 # Searches for a package provided by the game activity dependency
 find_package(game-activity REQUIRED CONFIG)
