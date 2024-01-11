@@ -109,7 +109,7 @@ Renderer::~Renderer() {
 bool init = false;
 int i = 0;
 
-void Renderer::render() {
+void Renderer::render(GameBoard* gameBoard) {
     // Check to see if the surface has changed size. This is _necessary_ to do every frame when
     // using immersive mode as you'll get no other notification that your renderable area has
     // changed.
@@ -154,9 +154,9 @@ void Renderer::render() {
         initVertices();
         init = true;
     }
-    //updateVertices();
+    updateVertices(*gameBoard);
     i++;
-    models_[0].updateVertex(i);
+
 
     if (!models_.empty()) {
         for (const auto &model: models_) {
@@ -473,15 +473,27 @@ void Renderer::handleInput() {
     android_app_clear_key_events(inputBuffer);
 }
 
-void Renderer::updateVertices() {
+void Renderer::updateVertices(GameBoard& gameBoard) {
 
-    std::map<int, Vector4> colorMap =
+    std::map<caseStatus, Vector4> colorMap =
             {
-                    {0, {0.1, 0.1, 0.1, 0.5}},
-                    {1, {0.9, 0.2, 0.4, 1.0}},
-                    {2, {0.2, 0.6, 0.2, 1.0}}
+                    {caseStatus::EMPTY, {0.1, 0.1, 0.1, 0.5}},
+                    {caseStatus::FRUIT, {0.9, 0.2, 0.4, 1.0}},
+                    {caseStatus::SNAKE, {0.2, 0.6, 0.2, 1.0}}
             };
 
+    auto board = gameBoard.getGrid();
+
+    for (int x = 0; x <= GameBoard::getBoardHeight() - 1; x++)
+    {
+        for (int y = 0; y <= GameBoard::getBoardWidth() - 1; y++)
+        {
+            uint32_t position = y * GameBoard::getBoardWidth() + x;
+            models_[0].updateVertex(x, y, colorMap[board[x][y].getCaseStatus()]);
+            //setQuadColor(&m_vertices[position], colorMap[board[x][y].getCaseStatus()]);
+        }
+    }
+    /*
     for (int x = 0; x <= 20 - 1; x++)
     {
         for (int y = 0; y <= 20 - 1; y++)
@@ -489,12 +501,13 @@ void Renderer::updateVertices() {
             uint32_t position = y * 20 + x;
             setQuadColor(&m_vertices[position], colorMap[0]);
         }
-    }
+    }*/
 
 }
 
 void Renderer::setQuadColor(Quad* quad, Vector4 color)
 {
+    //models_[0].updateVertex()
     quad->vertex1.uv = color;
     quad->vertex2.uv = color;
     quad->vertex3.uv = color;

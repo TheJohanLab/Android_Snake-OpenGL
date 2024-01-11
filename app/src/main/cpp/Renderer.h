@@ -6,6 +6,7 @@
 
 #include "Model.h"
 #include "Shader.h"
+#include "Game/GameBoard.h"
 
 #include <map>
 
@@ -39,9 +40,9 @@ public:
     /*!
      * Renders all the models in the renderer
      */
-    void render();
+    void render(GameBoard* gameBoard);
 
-    void updateVertices();
+    void updateVertices(GameBoard& gameBoard);
 
 private:
 

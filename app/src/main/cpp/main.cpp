@@ -3,6 +3,8 @@
 #include <game-activity/GameActivity.cpp>
 #include <game-text-input/gametextinput.cpp>
 #include "Renderer.h"
+#include "Game/GameBoard.h"
+#include "Game/GameMechanics.h"
 #include <chrono>
 
 extern "C" {
@@ -78,6 +80,10 @@ extern "C" {
         //clock_t t1, t2;
         //m_isRunning = true;
         double period = 1000 / 60; //16 ms
+
+        GameBoard* m_gameBoard = new GameBoard();
+        GameMechanics m_gameMechanics = GameMechanics(m_gameBoard);
+
         do {
             // Process all pending events before running game logic.
             if (ALooper_pollAll(0, nullptr, &events, (void **) &pSource) >= 0) {
@@ -99,12 +105,10 @@ extern "C" {
                 do {
                     t2 = std::chrono::high_resolution_clock::now();
                     a = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-                    auto b = a.count();
-                    int z = 0;
                 }while (a.count() < period);
 
                 m_frameCnt++;
-                if (m_frameCnt % 60 == 0) {
+                if (m_frameCnt % 30 == 0) {
 
                     // We know that our user data is a Renderer, so reinterpret cast it. If you change your
                     // user data remember to change it here
@@ -113,8 +117,9 @@ extern "C" {
                     // Process game input
                     pRenderer->handleInput();
 
+                    m_gameMechanics.onUpdate();
                     // Render a frame
-                    pRenderer->render();
+                    pRenderer->render(m_gameBoard);
 
                 }
 

@@ -20,7 +20,7 @@ public:
 	GameMechanics() = default;
 	GameMechanics(GameBoard* gameBoard);
 
-	//void onUpdate(GLFWwindow* window);
+	void onUpdate();
 	//void onRender(GLFWwindow* window);
 	
 	void initGame();

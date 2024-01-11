@@ -78,10 +78,10 @@ public:
         return *spTexture_;
     }
 
-    inline void updateVertex(int x)
+    inline void updateVertex(int x, int y, Vector4 color)
     {
-        int idx = x;
-        Vector4 color = {1.0, 1.0, 1.0, 1.0};
+        int idx = x + y * 20;
+        //Vector4 color = {1.0, 1.0, 1.0, 1.0};
         vertices_[idx].vertex1.uv = color;
         vertices_[idx].vertex2.uv = color;
         vertices_[idx].vertex3.uv = color;
