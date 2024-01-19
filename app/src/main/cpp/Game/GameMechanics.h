@@ -12,9 +12,10 @@ private:
 	bool m_gameIsOver = false;
 	Snake* m_snake;
 	//GameRenderer m_renderer;
-	direction m_lastDir = direction::UP;
+	direction m_dir = direction::UP;
+    vec2 inputSrcPos {0, 0};
+    vec2 inputDstPos {0, 0};
 
-	//direction getDirection(GLFWwindow* window, direction previousDir);
 
 public:
 	GameMechanics() = default;
@@ -22,10 +23,13 @@ public:
 
 	void onUpdate();
 	//void onRender(GLFWwindow* window);
-	
+
 	void initGame();
 	void checkGameCase();
 	void generateNewFruit();
 	bool isGameOver() const { return m_gameIsOver; }
+	direction handleDirection(direction previousDir);
+    void setInputSrcPos(vec2 pos);
+    void setInputDstPos(vec2 pos);
 };
 

@@ -7,6 +7,7 @@
 #include "Model.h"
 #include "Shader.h"
 #include "Game/GameBoard.h"
+#include "Game/GameMechanics.h"
 
 #include <map>
 
@@ -35,7 +36,7 @@ public:
      *
      * Note: this will clear the input queue
      */
-    void handleInput();
+    void handleInput(GameMechanics& m_gameMechanics);
 
     /*!
      * Renders all the models in the renderer

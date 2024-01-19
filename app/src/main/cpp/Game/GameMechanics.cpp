@@ -16,8 +16,8 @@ GameMechanics::GameMechanics(GameBoard* gameBoard)
 void GameMechanics::onUpdate()
 {
 	//m_lastDir = getDirection(m_lastDir);
-	m_lastDir = direction::UP;
-	m_snake->move(m_lastDir, *m_gameBoard);
+	//m_lastDir = direction::UP;
+	m_snake->move(m_dir, *m_gameBoard);
 	checkGameCase();
 }
 
@@ -63,6 +63,43 @@ void GameMechanics::generateNewFruit()
 	m_gameBoard->updateCaseFruit(fruitCoords);
 
 
+}
+
+void GameMechanics::setInputSrcPos(vec2 pos) {
+    this->inputSrcPos = pos;
+}
+
+void GameMechanics::setInputDstPos(vec2 pos) {
+    this->inputDstPos = pos;
+}
+
+
+direction GameMechanics::handleDirection(direction previousDir) {
+
+    float deltaX = inputDstPos.posX - inputSrcPos.posX;
+    float deltaY = inputDstPos.posY - inputSrcPos.posY;
+
+    float absDeltaX = std::abs(deltaX);
+    float absDeltaY = std::abs(deltaY);
+    float swipeThreshold = 10;
+
+    if (absDeltaX > absDeltaY && absDeltaX > swipeThreshold) {
+        // Swipe horizontal
+        if (deltaX > 0 && m_dir != direction::LEFT)
+            m_dir = direction::RIGHT;
+        else if (deltaX < 0 && m_dir != direction::RIGHT)
+            m_dir = direction::LEFT;
+        //m_dir = (deltaX > 0) ? direction::RIGHT : direction::LEFT;
+    } else if (absDeltaY > absDeltaX && absDeltaY > swipeThreshold) {
+        // Swipe vertical
+        if (deltaY > 0 && m_dir != direction::UP)
+            m_dir = direction::DOWN;
+        else if (deltaY < 0 && m_dir != direction::DOWN)
+            m_dir = direction::UP;
+        //m_dir = (deltaY > 0) ? direction::DOWN : direction::UP;
+    }
+
+    return direction::UP;
 }
 
 /*

@@ -115,7 +115,7 @@ extern "C" {
                     auto *pRenderer = reinterpret_cast<Renderer *>(pApp->userData);
 
                     // Process game input
-                    pRenderer->handleInput();
+                    pRenderer->handleInput(m_gameMechanics);
 
                     m_gameMechanics.onUpdate();
                     // Render a frame

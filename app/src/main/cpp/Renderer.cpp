@@ -385,7 +385,7 @@ Quad Renderer::createQuad(float x, float y, float width, float height)
 }
 
 
-void Renderer::handleInput() {
+void Renderer::handleInput(GameMechanics& m_gameMechanics) {
     // handle all queued inputs
     auto *inputBuffer = android_app_swap_input_buffers(app_);
     if (!inputBuffer) {
@@ -414,6 +414,7 @@ void Renderer::handleInput() {
             case AMOTION_EVENT_ACTION_POINTER_DOWN:
                 aout << "(" << pointer.id << ", " << x << ", " << y << ") "
                      << "Pointer Down";
+                m_gameMechanics.setInputSrcPos({static_cast<uint8_t>(x), static_cast<uint8_t>(y)});
                 break;
 
             case AMOTION_EVENT_ACTION_CANCEL:
@@ -424,6 +425,7 @@ void Renderer::handleInput() {
             case AMOTION_EVENT_ACTION_POINTER_UP:
                 aout << "(" << pointer.id << ", " << x << ", " << y << ") "
                      << "Pointer Up";
+                m_gameMechanics.setInputDstPos({static_cast<uint8_t>(x), static_cast<uint8_t>(y)});
                 break;
 
             case AMOTION_EVENT_ACTION_MOVE:
@@ -446,6 +448,8 @@ void Renderer::handleInput() {
         }
         aout << std::endl;
     }
+
+    m_gameMechanics.handleDirection(direction::UP);
     // clear the motion input count in this buffer for main thread to re-use.
     android_app_clear_motion_events(inputBuffer);
 
