@@ -15,7 +15,7 @@ private:
 	direction m_dir = direction::UP;
     vec2 inputSrcPos {0, 0};
     vec2 inputDstPos {0, 0};
-
+    bool isDirectionReady = false;
 
 public:
 	GameMechanics() = default;
@@ -29,7 +29,10 @@ public:
 	void generateNewFruit();
 	bool isGameOver() const { return m_gameIsOver; }
 	direction handleDirection(direction previousDir);
-    void setInputSrcPos(vec2 pos);
-    void setInputDstPos(vec2 pos);
+    void setInputSrcPos(int x, int y);
+    void setInputDstPos(int x, int y);
+
+    void setInputReady(bool isReady) { isDirectionReady = isReady; }
+
 };
 

@@ -252,13 +252,12 @@ void Renderer::initRenderer() {
     shader_->activate();
 
     // setup any other gl related global states
-    glClearColor(CORNFLOWER);
+    glClearColor(CORNFLOWER_BLUE);
 
     // enable alpha globally for now, you probably don't want to do this in a game
     //glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // get some demo models into memory
     initVertices();
 }
 
@@ -414,7 +413,8 @@ void Renderer::handleInput(GameMechanics& m_gameMechanics) {
             case AMOTION_EVENT_ACTION_POINTER_DOWN:
                 aout << "(" << pointer.id << ", " << x << ", " << y << ") "
                      << "Pointer Down";
-                m_gameMechanics.setInputSrcPos({static_cast<uint8_t>(x), static_cast<uint8_t>(y)});
+                m_gameMechanics.setInputReady(false);
+                m_gameMechanics.setInputSrcPos(x, y);
                 break;
 
             case AMOTION_EVENT_ACTION_CANCEL:
@@ -425,7 +425,9 @@ void Renderer::handleInput(GameMechanics& m_gameMechanics) {
             case AMOTION_EVENT_ACTION_POINTER_UP:
                 aout << "(" << pointer.id << ", " << x << ", " << y << ") "
                      << "Pointer Up";
-                m_gameMechanics.setInputDstPos({static_cast<uint8_t>(x), static_cast<uint8_t>(y)});
+                m_gameMechanics.setInputDstPos(x, y);
+                m_gameMechanics.setInputReady(true);
+                m_gameMechanics.handleDirection(direction::UP);
                 break;
 
             case AMOTION_EVENT_ACTION_MOVE:
@@ -436,12 +438,12 @@ void Renderer::handleInput(GameMechanics& m_gameMechanics) {
                     pointer = motionEvent.pointers[index];
                     x = GameActivityPointerAxes_getX(&pointer);
                     y = GameActivityPointerAxes_getY(&pointer);
-                    aout << "(" << pointer.id << ", " << x << ", " << y << ")";
+                   // aout << "(" << pointer.id << ", " << x << ", " << y << ")";
 
                     if (index != (motionEvent.pointerCount - 1)) aout << ",";
                     aout << " ";
                 }
-                aout << "Pointer Move";
+                //aout << "Pointer Move";
                 break;
             default:
                 aout << "Unknown MotionEvent Action: " << action;
@@ -449,7 +451,6 @@ void Renderer::handleInput(GameMechanics& m_gameMechanics) {
         aout << std::endl;
     }
 
-    m_gameMechanics.handleDirection(direction::UP);
     // clear the motion input count in this buffer for main thread to re-use.
     android_app_clear_motion_events(inputBuffer);
 

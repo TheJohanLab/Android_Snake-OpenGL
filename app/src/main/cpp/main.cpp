@@ -108,7 +108,7 @@ extern "C" {
                 }while (a.count() < period);
 
                 m_frameCnt++;
-                if (m_frameCnt % 30 == 0) {
+                if (m_frameCnt % 15 == 0) {
 
                     // We know that our user data is a Renderer, so reinterpret cast it. If you change your
                     // user data remember to change it here

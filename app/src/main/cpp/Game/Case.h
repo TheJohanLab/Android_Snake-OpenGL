@@ -3,12 +3,16 @@
 #include <iostream>
 
 struct vec2 {
-	uint8_t posX;
-	uint8_t posY;
+	uint16_t posX;
+	uint16_t posY;
 
 	bool operator==(const vec2& other) {
 		return (posX == other.posX) && (posY == other.posY);
 	}
+
+    bool isEmpty() {
+        return posX==0 && posY == 0;
+    }
 };
 
 enum class caseStatus {
